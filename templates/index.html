@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yt-dlp Custom WebUI</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff0000;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            padding: 10px;
+            font-family: monospace;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        textarea:focus {
+            border-color: #ff0000;
+            outline: none;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2e3b2e;
+            border-left: 5px solid #4caf50;
+            border-radius: 4px;
+        }
+        .note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>YouTube Max-Quality Downloader</h1>
+    <p>URLを1行に1つずつ入力してください（複数指定可能）。日本語字幕がある場合は自動でmp4に埋め込まれます。</p>
+    
+    <form action="/download" method="post">
+        <textarea name="urls" placeholder="https://www.youtube.com/watch?v=...&#10;https://www.youtube.com/watch?v=..."></textarea>
+        <button type="submit">ダウンロード開始</button>
+    </form>
+
+    {% if message %}
+    <div class="message">
+        {{ message }}
+    </div>
+    {% endif %}
+    
+    <div class="note">
+        ※最高画質のエンコードとマージを行うため、処理完了まで時間がかかる場合があります（バックエンドのログを確認してください）。
+    </div>
+</div>
+
+</body>
+</html>

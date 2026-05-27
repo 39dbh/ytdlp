@@ -1,0 +1,9 @@
+services:
+  yt-downloader:
+    build: .
+    container_name: yt-downloader
+    ports:
+      - "8080:8080"
+    volumes:
+      - /mnt/data/mp4:/app/downloads
+    restart: unless-stopped
