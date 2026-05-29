@@ -15,27 +15,29 @@ templates = Jinja2Templates(directory="templates")
 
 def get_yt_dlp_options():
     """
-    yt-dlpのオプションを設定
+    yt-dlpのオプションを設定（サムネイル埋め込みを追加）
     """
     return {
-        # 最高画質の動画と最高音質をマージ、拡張子はmp4を選択
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
-        
-        # 字幕設定
-        'writesubtitles': True,             # 字幕をダウンロードする
-        'subtitleslangs': ['ja'],           # 日本語字幕を指定
-        'subtitlesformat': 'srt/vtt',       # 字幕フォーマット
-        
-        # 後処理（FFmpegによるマージ）
+        'writesubtitles': True,
+        'subtitleslangs': ['ja'],
+        'subtitlesformat': 'srt/vtt',
+
+        # 1. サムネイルのダウンロードを有効化
+        'writethumbnail': True,
+
         'postprocessors': [
+            # 2. サムネイルを動画ファイル（MP4）に埋め込む設定を追加
             {
-                # 動画・音声・字幕をmp4に組み込む（ソフトサブ）
+                'key': 'EmbedThumbnail',
+                'already_have_thumbnail': False,
+            },
+            {
                 'key': 'FFmpegEmbedSubtitle',
                 'already_have_subtitle': False,
             },
             {
-                # 必要に応じてコンテナをmp4に修正
                 'key': 'FFmpegVideoConvertor',
                 'preferedformat': 'mp4',
             }
@@ -44,14 +46,14 @@ def get_yt_dlp_options():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "message": None})
+    return templates.TemplateResponse(request=request, name="index.html", context={"message": None})
 
 @app.post("/download", response_class=HTMLResponse)
 async def download(request: Request, urls: str = Form(...)):
     url_list = [url.strip() for url in re.split(r'[\n,\r]+', urls) if url.strip()]
-    
+
     if not url_list:
-        return templates.TemplateResponse("index.html", {"request": request, "message": "URLが入力されていません。"})
+        return templates.TemplateResponse(request=request, name="index.html", context={"message": "URLが入力されていません。"})
 
     ydl_opts = get_yt_dlp_options()
     success_count = 0
@@ -70,4 +72,4 @@ async def download(request: Request, urls: str = Form(...)):
     if failed_urls:
         result_message += f" (失敗: {len(failed_urls)}件)"
 
-    return templates.TemplateResponse("index.html", {"request": request, "message": result_message})
+    return templates.TemplateResponse(request=request, name="index.html", context={"message": result_message})
